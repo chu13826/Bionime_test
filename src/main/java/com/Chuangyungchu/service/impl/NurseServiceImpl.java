@@ -14,27 +14,33 @@ import com.Chuangyungchu.service.NurseService;
 @Service
 @Transactional
 public class NurseServiceImpl implements NurseService {
-	
+
 	@Autowired
 	NurseDao nurseDao;
-	
+
 	@Override
-	public List<Nurse> findAll(){
+	public List<Nurse> findAll() {
 		return nurseDao.findAll();
 	}
-	
+
 	@Override
 	public Nurse saveOrUpdate(Nurse nurse) {
 		return nurseDao.save(nurse);
 	}
-	
+
 	@Override
 	public void deleteByNurseId(Integer nurseId) {
 		nurseDao.deleteById(nurseId);
 	}
-	
+
 	@Override
 	public Optional<Nurse> findById(Integer nurseId) {
 		return nurseDao.findById(nurseId);
+	}
+
+	@Override
+	public Optional<Nurse> findNurseByEmployeeNumber(final Integer employeeNumber) {
+		return nurseDao.findNurseByEmployeeNumber(employeeNumber);
+
 	}
 }

@@ -17,5 +17,5 @@ public interface SiteService {
 	
 	List<Site> findBySiteName(String siteName);
 
-
+	Optional<Site> findSiteBySiteName(final String siteName);
 }

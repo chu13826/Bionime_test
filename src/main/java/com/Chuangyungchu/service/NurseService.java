@@ -14,5 +14,6 @@ public interface NurseService {
 	void deleteByNurseId(Integer nurseId);
 
 	Optional<Nurse> findById(Integer nurseId);
-
+	
+	Optional<Nurse> findNurseByEmployeeNumber(final Integer employeeNumber);
 }

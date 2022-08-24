@@ -9,6 +9,11 @@
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<style>
+.error{
+ color: red;
+}
+</style>
 </head>
 <body>
 	<div class="container">
@@ -17,10 +22,10 @@
 			<div class="mt-5 m-auto col-9">
 				<h1 th:text="${nurse.nurseId != null} ? '修改護士資訊' : '新增護士'"></h1>
 				<button type="button" th:onclick="location.href='/';">返回</button>
-				<button type="submit" th:text="${nurse.nurseId != null} ? '儲存' : '新增'"></button>
+				<button type="submit" id="btn-submit" th:text="${nurse.nurseId != null} ? '儲存' : '新增'"></button>
 				<hr>
 				<input type="hidden" th:field="*{nurseId}">
-				<label>員工編號</label><input type="text" th:field="*{employeeNumber}"><br>
+				<label>員工編號</label><input type="text" th:field="*{employeeNumber}" id="employeeNumber"><label id="checkResult"></label><br>
 				<label>護士姓名</label><input type="text" th:field="*{nurseName}"><br>
 			</div>
 			<div class="m-auto col-9">
@@ -62,6 +67,28 @@
 	</div>
 	<script>
 		$(function() {
+			$('#employeeNumber').on("input",function(){
+				var employeeNumber = $(this).val();
+				console.log(employeeNumber);
+				$.ajax({
+		            type: "post",
+		            url: "/nurse/checkEmployeeNumber",
+		            dataType: "json",
+		            contentType: "application/json;charset=utf-8",
+		            data: JSON.stringify({employeeNumber: $('#employeeNumber').val()}),
+		            success: function (data) {
+		                if (data != null) {
+		                    $('#checkResult').text(`已存在此員編!!!`).addClass('error');
+		                    $('#btn-submit').attr("disabled", true);
+		                } else {
+		                	$('#checkResult').text(``);
+		                    $('#btn-submit').attr("disabled", false);
+		                }
+		            }
+		        })
+			});
+			
+			//搜尋checked site, 在選擇區與非選區調整顯示
 			$("input:checkbox").each(function(){
 			    var $this = $(this);
 			    selectSite = '#select' + this.id;
@@ -74,12 +101,13 @@
 					$(unselectStie).removeClass('d-none');
 			    }
 			})
-			//選擇Site
+			//選擇區與非選區樣式調控
+			//已選區控制
 			$('.selectSite').click(function() {
 				selectId = '#' + this.id; //取得site物件id
 				$('.selectSite').removeClass('bg-info');
 				$('#' + this.id).addClass('bg-info');//選擇後背景顏色變化
-				console.log(selectId);
+				//加入Site至選擇區
 				$('#addSite').click(function() {
 					$('#' + $(selectId).attr('data-selectSiteName')).attr('checked', 'checked');
 					$('.selectSite').removeClass('bg-info');
@@ -96,6 +124,7 @@
 					    }
 					})
 				});
+				//移除Site至選擇區
 				$('#removeSite').click(function() {
 					$('#' + $(selectId).attr('data-selectSiteName')).removeAttr('checked', 'checked');
 					$('.selectSite').removeClass('bg-info');
@@ -113,11 +142,12 @@
 					})
 				})
 			});
+			//非選區控制
 			$('.unselectSite').click(function() {
 				selectId = '#' + this.id; //取得site物件id
 				$('.unselectSite').removeClass('bg-info');
 				$('#' + this.id).addClass('bg-info');//選擇後背景顏色變化
-				console.log(selectId);
+				//加入Site至選擇區
 				$('#addSite').click(function() {
 					$('#' + $(selectId).attr('data-selectSiteName')).attr('checked', 'checked');
 					$('.unselectSite').removeClass('bg-info');
@@ -136,6 +166,7 @@
 					})
 					    
 				});
+				//加入Site至選擇區
 				$('#removeSite').click(function() {
 					$('#' + $(selectId).attr('data-selectSiteName')).removeAttr('checked', 'checked');
 					$('.unselectSite').removeClass('bg-info');

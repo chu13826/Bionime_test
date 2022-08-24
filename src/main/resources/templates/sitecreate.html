@@ -8,6 +8,12 @@
 	rel="stylesheet">
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<style>
+.error {
+	color: red;
+}
+</style>
 </head>
 <body>
 	<div class="container">
@@ -16,15 +22,39 @@
 				<form th:action="@{/sitesave}" th:method="post" id="form"
 					th:modelAttribute="site">
 					<h1>新增站點</h1>
-					<!-- 			<button type="button" onclick="history.back()">返回</button> -->
 					<button type="button" th:onclick="location.href='/';">返回</button>
-					<button type="submit">新增</button>
-					<hr> <label>站點名稱</label><input type="text" th:name="siteName">
-					<!-- 			<input type="hidden" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}" -->
-					<!-- 												name="siteUpdateTime"> -->
+					<button type="submit" id="btn-submit">新增</button>
+					<hr>
+					<label>站點名稱</label><input type="text" id="siteName"
+						th:name="siteName"><label id="checkResult"></label>
 				</form>
 			</div>
 		</div>
 	</div>
+	<script>
+	//確認是否存在站點名稱
+	$(function() {
+		$('#siteName').on("input",function(){
+			var siteName = $(this).val();
+			console.log(siteName)
+			$.ajax({
+	            type: "post",
+	            url: "/site/checkSiteName",
+	            dataType: "json",
+	            contentType: "application/json;charset=utf-8",
+	            data: JSON.stringify({siteName: $('#siteName').val()}),
+	            success: function (data) {
+	                if (data != null) {
+	                    $('#checkResult').text(`已存在此站名!!!`).addClass('error');
+	                    $('#btn-submit').attr("disabled", true);
+	                } else {
+	                	$('#checkResult').text(``);
+	                    $('#btn-submit').attr("disabled", false);
+	                }
+	            }
+	        })
+		});
+	});
+	</script>
 </body>
 </html>

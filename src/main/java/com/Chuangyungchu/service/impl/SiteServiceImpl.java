@@ -42,4 +42,9 @@ public class SiteServiceImpl implements SiteService {
 	public List<Site> findBySiteName(String siteName) {
 		return siteDao.findBySiteName(siteName);
 	}
+
+	@Override
+	public Optional<Site> findSiteBySiteName(String siteName) {
+		return siteDao.findSiteBySiteName(siteName);
+	}
 }

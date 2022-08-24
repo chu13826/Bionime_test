@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -52,16 +50,6 @@ public class Nurse {
 	@ManyToMany
 	@JoinTable(name = "assigned_sites", joinColumns = @JoinColumn(name = "nurse_nurseId"), inverseJoinColumns = @JoinColumn(name = "site_siteId"))
 	private Set<Site> assignedSites = new HashSet<>();
-
-	public void addSite(Site site) {
-		this.assignedSites.add(site);
-		site.getAssignedNurses().add(this);
-	}
-
-	public void removeSite(Site site) {
-		this.getAssignedSites().remove(site);
-		site.getAssignedNurses().remove(this);
-	}
 
 	public Nurse() {
 	}

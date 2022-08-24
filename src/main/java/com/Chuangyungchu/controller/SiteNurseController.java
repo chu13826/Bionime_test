@@ -1,5 +1,7 @@
 package com.Chuangyungchu.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -48,8 +51,7 @@ public class SiteNurseController {
 
 	// 前往新增護士表單
 	@RequestMapping("/nursecreate")
-	public String showNurseForm(Model model,
-			@ModelAttribute("nurse") Nurse nurse) {
+	public String showNurseForm(Model model, @ModelAttribute("nurse") Nurse nurse) {
 		model.addAttribute("sitelist", siteService.findAll());
 		return "nurseform.html";
 	}
@@ -84,15 +86,6 @@ public class SiteNurseController {
 		return "redirect:./";
 	}
 
-	@GetMapping("/assignSiteAdd/{siteName}")
-	@ResponseBody
-	public ResponseEntity<Boolean> assignSiteAdd(@ModelAttribute("nurse") Nurse nurse, @PathVariable String siteName) {
-		boolean check = true;
-		Site assignSite = siteService.findBySiteName(siteName).get(0);
-		nurse.getAssignedSites().add(assignSite);
-		return ResponseEntity.status(HttpStatus.OK).body(check);
-	}
-
 	// 刪除站點
 	@GetMapping("/sitedelete/{id}")
 	public String siteDelete(@PathVariable("id") Integer id) {
@@ -105,6 +98,30 @@ public class SiteNurseController {
 	public String nurseDelete(@PathVariable("id") Integer id) {
 		nurseService.deleteByNurseId(id);
 		return "redirect:/nurselist";
+	}
+
+	// 驗證護士員編重複
+	@PostMapping("/nurse/checkEmployeeNumber")
+	@ResponseBody
+	public ResponseEntity<Optional<Nurse>> findByEmployeeNumber(@RequestBody Nurse nurse) {
+		Optional<Nurse> check = nurseService.findNurseByEmployeeNumber(nurse.getEmployeeNumber());
+		if (check != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(check);
+		} else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+	}
+
+	// 驗證站點名稱重複
+	@PostMapping("/site/checkSiteName")
+	@ResponseBody
+	public ResponseEntity<Optional<Site>> findBySiteName(@RequestBody Site site) {
+		Optional<Site> checkSite = siteService.findSiteBySiteName(site.getSiteName());
+		if (checkSite != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(checkSite);
+		} else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
 	}
 
 }
